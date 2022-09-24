@@ -1,9 +1,9 @@
 package jd_seckill
 
 import (
-	"../common"
-	"../conf"
-	"../service"
+	"jd_seckill_go/common"
+	"jd_seckill_go/conf"
+	"jd_seckill_go/service"
 	"errors"
 	"fmt"
 	"github.com/Albert-Zhan/httpc"

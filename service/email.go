@@ -1,7 +1,7 @@
 package service
 
 import (
-	"../conf"
+	"jd_seckill_go/conf"
 	"gopkg.in/gomail.v2"
 	"strconv"
 )
