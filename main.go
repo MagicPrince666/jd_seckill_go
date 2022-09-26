@@ -104,6 +104,7 @@ func main() {
 
 func getJdTime() (int64, error) {
 	req := httpc.NewRequest(client)
+	req.SetHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
 	resp, body, err := req.SetUrl("https://api.m.jd.com/client.action?functionId=queryMaterialProducts&client=wh5").SetMethod("get").Send().End()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		log.Println("获取京东服务器时间失败")
