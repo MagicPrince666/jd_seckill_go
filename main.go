@@ -82,11 +82,18 @@ func main() {
 			t, _ := time.ParseInLocation("2006-01-02 15:04:05", buyDate, loc)
 			buyTime := t.UnixNano() / 1e6
 			diffTime := nowLocalTime - jdTime
+			if buyTime-nowLocalTime < 0 {
+				log.Println("设定时间已过,重新设置")
+				dateDiff := (nowLocalTime-buyTime)/(24*3600*1000) + 1
+				log.Println(fmt.Sprintf("相差天数为【%d】天", dateDiff))
+				buyTime += dateDiff * 24 * 3600 * 1000
+				buyDate = time.Unix(buyTime/1000, 0).Format("2006-01-02 15:04:05")
+			}
 			if jdTime == 0 {
 				diffTime = 50
 			}
 			log.Println(fmt.Sprintf("正在等待到达设定时间:%s，检测本地时间与京东服务器时间误差为【%d】毫秒", buyDate, diffTime))
-			timerTime := (buyTime + diffTime) - jdTime
+			timerTime := buyTime - diffTime
 			if timerTime <= 0 {
 				log.Println("请设置抢购时间")
 				os.Exit(0)
@@ -104,14 +111,14 @@ func main() {
 
 func getJdTime() (int64, error) {
 	req := httpc.NewRequest(client)
-	req.SetHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
+	req.SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
 	resp, body, err := req.SetUrl("https://api.m.jd.com/client.action?functionId=queryMaterialProducts&client=wh5").SetMethod("get").Send().End()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		log.Println("获取京东服务器时间失败")
 		return 0, errors.New("获取京东服务器时间失败")
 	}
 	jdtime := gjson.Get(body, "currentTime2").Int()
-	log.Println(fmt.Sprintf("返回消息%s", body))
+	// log.Println(fmt.Sprintf("返回消息%s", body))
 	return jdtime, nil
 }
 
